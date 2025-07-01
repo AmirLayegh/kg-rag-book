@@ -1,0 +1,84 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "graphrag-book"
+version = "0.1.0"
+description = "A GraphRAG project using LangChain and Neo4j"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    # Core LangChain packages
+    "langchain>=0.1.0",
+    "langchain-community>=0.0.20",
+    "langchain-openai>=0.0.5",
+    "pdfplumber",
+    
+    # Neo4j database driver
+    "neo4j>=5.15.0",
+    "langchain-neo4j>=0.0.5",
+    
+    # Vector databases and embeddings
+    "chromadb>=0.4.0",
+    "sentence-transformers>=2.2.0",
+    
+    # Data processing and utilities
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "pydantic>=2.0.0",
+    
+    # Environment and configuration
+    "python-dotenv>=1.0.0",
+    
+    # Async support
+    "asyncio",
+    "aiofiles>=23.0.0",
+    
+    # HTTP requests
+    "httpx>=0.25.0",
+    "requests>=2.31.0",
+    
+    # Document processing
+    "pypdf>=3.0.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=4.9.0",
+    
+    # Logging and monitoring
+    "loguru>=0.7.0",
+    
+    # JSON handling
+    "orjson>=3.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+    "isort>=5.12.0",
+    "pre-commit>=3.4.0",
+]
+
+jupyter = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
