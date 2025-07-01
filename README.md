@@ -2,16 +2,23 @@
 
 A GraphRAG (Graph Retrieval-Augmented Generation) project using LangChain and Neo4j.
 
+This repository contains the implementation examples and code from **"Essential GraphRAG: Knowledge Graph-Enhanced RAG"** by Tomaž Bratanič and Oskar Hane, published by [Manning Publications](https://www.manning.com/books/essential-graphrag).
+
+## About the Book
+
+**Essential GraphRAG** teaches you to implement accurate, performant, and traceable RAG by structuring the context data as a knowledge graph. The book covers how to upgrade your RAG applications with the power of knowledge graphs, delivering better performance, accuracy, traceability, and completeness compared to traditional RAG approaches.
+
 ## Overview
 
-This project combines the power of graph databases with language models to create intelligent retrieval-augmented generation systems.
+This project combines the power of graph databases with language models to create intelligent retrieval-augmented generation systems, following the methodologies outlined in the Essential GraphRAG book.
 
 ## Features
 
-- **LangChain Integration**: Leverage LangChain's comprehensive ecosystem for LLM operations
 - **Neo4j Graph Database**: Store and query knowledge graphs efficiently
-- **Vector Embeddings**: Support for semantic search using ChromaDB and sentence-transformers
+- **Hybrid Search**: Combines vector similarity search with traditional keyword search
+- **Vector Embeddings**: Support for semantic search using sentence-transformers
 - **Document Processing**: Parse and process various document formats (PDF, HTML, etc.)
+- **GraphRAG Implementation**: Complete implementation following the book's methodologies
 
 ## Setup
 
@@ -33,9 +40,33 @@ This project combines the power of graph databases with language models to creat
    NEO4J_PASSWORD=your_password
    ```
 
+
 ## Usage
 
-[Add usage examples here as you develop the project]
+Run the Chapter 2 example (Einstein's Patents and Inventions):
+```bash
+make run-ch02
+```
+
+This will:
+1. Download and process a PDF document about Einstein's patents
+2. Create vector embeddings using sentence-transformers
+3. Store the data in Neo4j with vector and full-text indexes
+4. Perform hybrid search combining semantic and keyword matching
+5. Generate AI-powered answers using retrieved context
+
+## Project Structure
+
+```
+graphrag_book/
+├── graphrag_book/
+│   ├── __init__.py
+│   ├── ch02.py          # Chapter 2 implementation
+│   └── utils.py         # Utility functions
+├── pyproject.toml       # Project dependencies
+├── README.md
+└── .gitignore
+```
 
 ## Development
 
@@ -44,17 +75,11 @@ Install development dependencies:
 uv sync --extra dev
 ```
 
-Run tests:
-```bash
-pytest
-```
+## Book Reference
 
-Format code:
-```bash
-black .
-isort .
-```
+This implementation is based on **"Essential GraphRAG: Knowledge Graph-Enhanced RAG"** by Tomaž Bratanič and Oskar Hane, published by Manning Publications. 
 
-## License
-
-[Add your license here] 
+- **Book URL**: https://www.manning.com/books/essential-graphrag
+- **Authors**: Tomaž Bratanič and Oskar Hane
+- **Publisher**: Manning Publications
+- **Publication**: September 2025 (estimated)
