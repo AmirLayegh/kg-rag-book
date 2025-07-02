@@ -25,6 +25,7 @@ def download_and_create_pdf_chunks(url: str, pdf_name: str, chunk_size: int, ove
     else:
         print(f"Failed to download PDF from {url}")
         return []
+    
 def embed(text, model):
     if model == "text-embedding-3-small":  
         response = open_ai_client.embeddings.create(
@@ -38,7 +39,7 @@ def embed(text, model):
 
 from neo4j import GraphDatabase
 
-def create_ne4j_index(driver, index_name, embeddings):
+def create_neo4j_index(driver, index_name, embeddings):
     driver.execute_query(
         f"""CREATE VECTOR INDEX {index_name} IF NOT EXISTS
         FOR (c:Chunk)
@@ -194,7 +195,7 @@ if __name__ == "__main__":
     print(f"Number of embedding dimensions: {len(embeddings[0])}")
     #print(f"First embedding: {embeddings[0]}")
     driver = GraphDatabase.driver(os.getenv("NEO4J_URI"), auth=(os.getenv("NEO4J_USERNAME"), os.getenv("NEO4J_PASSWORD")))
-    create_ne4j_index(driver, "pdf", embeddings)
+    create_neo4j_index(driver, "pdf", embeddings)
     store_chunks_and_populate_index(driver, chunks, embeddings)
     text, embedding = get_data_form_chunk(driver, 0)
     #print(f"Text: {text}")
