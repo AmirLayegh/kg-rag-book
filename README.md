@@ -20,6 +20,35 @@ This project combines the power of graph databases with language models to creat
 - **Document Processing**: Parse and process various document formats (PDF, HTML, etc.)
 - **GraphRAG Implementation**: Complete implementation following the book's methodologies
 
+## Chapter Overview
+
+### Chapter 2: Basic RAG with Vector Search and Hybrid Search
+**File**: `graphrag_book/ch02.py`
+
+Implements a foundational RAG (Retrieval-Augmented Generation) system that demonstrates:
+- **Document Processing**: Downloads and chunks PDF documents (Einstein's patents paper)
+- **Vector Embeddings**: Creates semantic embeddings using sentence-transformers (`all-MiniLM-L12-v2`)
+- **Neo4j Storage**: Stores text chunks and embeddings in a graph database
+- **Vector Search**: Implements semantic similarity search using vector indices
+- **Full-Text Search**: Creates keyword-based search capabilities
+- **Hybrid Search**: Combines vector and keyword search with score normalization
+- **Answer Generation**: Uses GPT-4o-mini to generate answers from retrieved context
+
+This chapter establishes the baseline RAG pipeline that subsequent chapters build upon.
+
+### Chapter 3: Parent Document Retrieval with Step-Back Prompting
+**File**: `graphrag_book/ch03.py`
+
+Advances the RAG system with sophisticated retrieval strategies:
+- **Parent-Child Architecture**: Splits documents into hierarchical chunks (large parent chunks containing smaller child chunks)
+- **Section-Based Splitting**: Uses regex patterns to split documents by titles and sections for better contextual boundaries
+- **Parent-Document Retrieval**: Returns larger parent chunks containing the matched children for comprehensive context
+- **Child-Level Search**: Performs vector search on smaller, focused child chunks for precision
+- **Parent-Document Retrieval**: Returns larger parent chunks containing the matched children for comprehensive context
+- **Step-Back Prompting**: Implements query reformulation technique to generate more generic, easier-to-answer questions
+
+This approach addresses the common RAG problem of retrieving relevant but insufficient context by ensuring complete sections are returned.
+
 ## Setup
 
 1. Install dependencies:
