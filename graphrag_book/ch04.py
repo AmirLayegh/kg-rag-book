@@ -1,6 +1,9 @@
 from cypher_queries import movie_query
 from utils import neo4j_driver
-from schema_utils import get_schema
+from schema_utils import get_schema, chat
+
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def create_movie_database(driver):
@@ -69,5 +72,13 @@ if __name__ == "__main__":
     #create_movie_database(driver)
     #print_schema(driver)
     full_prompt = create_full_prompt(driver, "Who directed the most movies?")
-    print(full_prompt)
+    #print(full_prompt)
+    response = chat(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that generates Cypher statements to query a graph database."},
+            {"role": "user", "content": full_prompt}
+        ],
+    )
+    print(response)
     driver.close()
