@@ -18,19 +18,19 @@ prf_filename = "ch03-downloaded.pdf"
 
 open_ai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-stepback_sysyem_promtp = """
-You are an expert at world knowledge. Your task is to step back
-and paraphrase a question to a more generic step-back question, which
-is easier to answer. Here are a few examples
-
-"input": "Could the members of The Police perform lawful arrests?"
-"output": "what can the members of The Police do?"
-
-"input": "Jan Sindel's was born in what country?"
-"output": "what is Jan Sindel's personal history?"
-"""
 
 def generate_stepback_question(question):
+    stepback_sysyem_promtp = """
+        You are an expert at world knowledge. Your task is to step back
+        and paraphrase a question to a more generic step-back question, which
+        is easier to answer. Here are a few examples
+
+        "input": "Could the members of The Police perform lawful arrests?"
+        "output": "what can the members of The Police do?"
+
+        "input": "Jan Sindel's was born in what country?"
+        "output": "what is Jan Sindel's personal history?"
+    """
     user_message = f"""{question}"""
     stepback_question = chat(
         model="gpt-4o-mini",
