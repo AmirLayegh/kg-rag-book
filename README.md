@@ -49,6 +49,16 @@ Advances the RAG system with sophisticated retrieval strategies:
 
 This approach addresses the common RAG problem of retrieving relevant but insufficient context by ensuring complete sections are returned.
 
+### Chapter 4: Text-to-Cypher with Schema-Aware Prompt Engineering
+**File**: `graphrag_book/ch04.py`
+
+Introduces graph database querying capabilities using natural language:
+- **Movie Database Setup**: Creates a comprehensive movie graph database using predefined Cypher queries
+- **Schema Introspection**: Automatically extracts and utilizes graph database schema for accurate query generation
+- **Text-to-Cypher Generation**: Converts natural language questions into valid Cypher queries using LLM
+
+This chapter establishes the foundation for natural language querying of knowledge graphs, enabling users to interact with complex graph data using conversational interfaces.
+
 ## Setup
 
 1. Install dependencies:
@@ -69,7 +79,6 @@ This approach addresses the common RAG problem of retrieving relevant but insuff
    NEO4J_PASSWORD=your_password
    ```
 
-
 ## Usage
 
 Run the Chapter 2 example (Einstein's Patents and Inventions):
@@ -77,12 +86,15 @@ Run the Chapter 2 example (Einstein's Patents and Inventions):
 make run-ch02
 ```
 
-This will:
-1. Download and process a PDF document about Einstein's patents
-2. Create vector embeddings using sentence-transformers
-3. Store the data in Neo4j with vector and full-text indexes
-4. Perform hybrid search combining semantic and keyword matching
-5. Generate AI-powered answers using retrieved context
+Run the Chapter 3 example (Parent Document Retrieval):
+```bash
+make run-ch03
+```
+
+Run the Chapter 4 example (Text-to-Cypher Query Generation):
+```bash
+make run-ch04
+```
 
 ## Project Structure
 
@@ -90,9 +102,15 @@ This will:
 graphrag_book/
 ├── graphrag_book/
 │   ├── __init__.py
-│   ├── ch02.py          # Chapter 2 implementation
-│   └── utils.py         # Utility functions
-├── pyproject.toml       # Project dependencies
+│   ├── ch02.py              # Chapter 2: Basic RAG with Vector Search and Hybrid Search
+│   ├── ch03.py              # Chapter 3: Parent Document Retrieval with Step-Back Prompting
+│   ├── ch04.py              # Chapter 4: Text-to-Cypher with Schema-Aware Prompt Engineering
+│   ├── utils.py             # Utility functions for Neo4j and common operations
+│   ├── schema_utils.py      # Schema introspection and chat utilities
+│   └── cypher_queries.py    # Predefined Cypher queries for database setup
+├── makefile                 # Commands to run chapter examples
+├── pyproject.toml          # Project dependencies and configuration
+├── uv.lock                 # Dependency lock file
 ├── README.md
 └── .gitignore
 ```
@@ -101,7 +119,7 @@ graphrag_book/
 
 Install development dependencies:
 ```bash
-uv sync --extra dev
+uv sync
 ```
 
 ## Book Reference
@@ -111,4 +129,3 @@ This implementation is based on **"Essential GraphRAG: Knowledge Graph-Enhanced 
 - **Book URL**: https://www.manning.com/books/essential-graphrag
 - **Authors**: Tomaž Bratanič and Oskar Hane
 - **Publisher**: Manning Publications
-- **Publication**: September 2025 (estimated)
