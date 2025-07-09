@@ -70,6 +70,18 @@ Implements an advanced agentic RAG system with autonomous reasoning capabilities
 
 This chapter represents a significant evolution from simple retrieval to autonomous agent behavior, enabling the system to break down complex questions, gather information iteratively, and provide comprehensive answers through intelligent tool orchestration.
 
+### Chapter 6: Structured Information Extraction and Legal Contract Knowledge Graphs
+**File**: `graphrag_book/ch06.py`
+
+Demonstrates structured information extraction from legal documents and knowledge graph construction:
+- **Structured Output**: Uses OpenAI's structured output feature with Pydantic models to extract contract information reliably
+- **Legal Document Processing**: Processes complex legal contracts to extract parties, dates, terms, obligations, and jurisdictions
+- **Entity Relationship Modeling**: Defines comprehensive schemas for contracts, organizations, and locations with proper relationships
+- **Knowledge Graph Construction**: Creates detailed contract knowledge graphs in Neo4j with proper constraints and relationships
+- **Legal Data Querying**: Implements querying capabilities for contract databases with type-specific searches
+
+This chapter showcases how to handle complex, domain-specific documents (legal contracts) by combining structured AI extraction with graph database storage, enabling sophisticated querying and analysis of legal document collections.
+
 ## Setup
 
 1. Install dependencies:
@@ -112,6 +124,11 @@ Run the Chapter 5 example (Agentic RAG with Multi-Tool Reasoning):
 make run-ch05
 ```
 
+Run the Chapter 6 example (Structured Information Extraction and Legal Contract Knowledge Graphs):
+```bash
+make run-ch06
+```
+
 ## Project Structure
 
 ```
@@ -122,6 +139,7 @@ graphrag_book/
 │   ├── ch03.py              # Chapter 3: Parent Document Retrieval with Step-Back Prompting
 │   ├── ch04.py              # Chapter 4: Text-to-Cypher with Schema-Aware Prompt Engineering
 │   ├── ch05.py              # Chapter 5: Agentic RAG with Multi-Tool Reasoning
+│   ├── ch06.py              # Chapter 6: Structured Information Extraction and Legal Contract Knowledge Graphs
 │   ├── utils.py             # Utility functions for Neo4j and common operations
 │   ├── schema_utils.py      # Schema introspection and chat utilities
 │   └── cypher_queries.py    # Predefined Cypher queries for database setup
