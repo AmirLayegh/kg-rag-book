@@ -4,7 +4,10 @@ A GraphRAG (Graph Retrieval-Augmented Generation) project using LangChain and Ne
 
 This repository contains the implementation examples and code from **"Essential GraphRAG: Knowledge Graph-Enhanced RAG"** by Tomaž Bratanič and Oskar Hane, published by [Manning Publications](https://www.manning.com/books/essential-graphrag).
 
+
 ## About the Book
+
+![Essential GraphRAG Book Cover](data/kg-book.png)
 
 **Essential GraphRAG** teaches you to implement accurate, performant, and traceable RAG by structuring the context data as a knowledge graph. The book covers how to upgrade your RAG applications with the power of knowledge graphs, delivering better performance, accuracy, traceability, and completeness compared to traditional RAG approaches.
 
