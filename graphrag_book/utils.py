@@ -92,3 +92,13 @@ def chat(messages, model="gpt-4o-mini", temp=0.0, config={}):
         **config
     )
     return response.choices[0].message.content
+
+def tool_choice(messages, model="gpt-4o", temperature=0, tools=[], config={}):
+    response = open_ai_client.chat.completions.create(
+        model=model,
+        temperature=temperature,
+        messages=messages,
+        tools=tools or None,
+        **config,
+    )
+    return response.choices[0].message.tool_calls
