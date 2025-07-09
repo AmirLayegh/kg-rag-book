@@ -59,6 +59,17 @@ Introduces graph database querying capabilities using natural language:
 
 This chapter establishes the foundation for natural language querying of knowledge graphs, enabling users to interact with complex graph data using conversational interfaces.
 
+### Chapter 5: Agentic RAG with Multi-Tool Reasoning
+**File**: `graphrag_book/ch05.py`
+
+Implements an advanced agentic RAG system with autonomous reasoning capabilities:
+- **Query Reformulation**: Automatically updates questions to be more atomic, specific, and easier to answer using contextual information
+- **Tool Routing**: Intelligently selects appropriate tools based on question type and context using GPT-4o
+- **Specialized Tools**: Dedicated functions for movie queries by title, actor search, general text-to-Cypher fallback, and answer extraction
+- **Answer Critique**: Evaluates response completeness and identifies missing information for follow-up queries
+
+This chapter represents a significant evolution from simple retrieval to autonomous agent behavior, enabling the system to break down complex questions, gather information iteratively, and provide comprehensive answers through intelligent tool orchestration.
+
 ## Setup
 
 1. Install dependencies:
@@ -96,6 +107,11 @@ Run the Chapter 4 example (Text-to-Cypher Query Generation):
 make run-ch04
 ```
 
+Run the Chapter 5 example (Agentic RAG with Multi-Tool Reasoning):
+```bash
+make run-ch05
+```
+
 ## Project Structure
 
 ```
@@ -105,6 +121,7 @@ graphrag_book/
 │   ├── ch02.py              # Chapter 2: Basic RAG with Vector Search and Hybrid Search
 │   ├── ch03.py              # Chapter 3: Parent Document Retrieval with Step-Back Prompting
 │   ├── ch04.py              # Chapter 4: Text-to-Cypher with Schema-Aware Prompt Engineering
+│   ├── ch05.py              # Chapter 5: Agentic RAG with Multi-Tool Reasoning
 │   ├── utils.py             # Utility functions for Neo4j and common operations
 │   ├── schema_utils.py      # Schema introspection and chat utilities
 │   └── cypher_queries.py    # Predefined Cypher queries for database setup
