@@ -85,6 +85,12 @@ Demonstrates structured information extraction from legal documents and knowledg
 
 This chapter showcases how to handle complex, domain-specific documents (legal contracts) by combining structured AI extraction with graph database storage, enabling sophisticated querying and analysis of legal document collections.
 
+### Chapter 7: MS GraphRAG Implementation
+**File**: `graphrag_book/ch07.py`
+
+Demonstrates large-scale MS GraphRAG implementation.
+
+
 ## Setup
 
 1. Install dependencies:
@@ -143,6 +149,7 @@ graphrag_book/
 │   ├── ch04.py              # Chapter 4: Text-to-Cypher with Schema-Aware Prompt Engineering
 │   ├── ch05.py              # Chapter 5: Agentic RAG with Multi-Tool Reasoning
 │   ├── ch06.py              # Chapter 6: Structured Information Extraction and Legal Contract Knowledge Graphs
+│   ├── ch07.py              # Chapter 7: Large-Scale GraphRAG from Texts
 │   ├── utils.py             # Utility functions for Neo4j and common operations
 │   ├── schema_utils.py      # Schema introspection and chat utilities
 │   └── cypher_queries.py    # Predefined Cypher queries for database setup

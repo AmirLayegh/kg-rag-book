@@ -6,7 +6,7 @@ from ch07_tools import create_extraction_prompt, parse_extraction_output, import
 from typing import List
 from tqdm import tqdm
 
-load_dotenv()
+load_dotenv(override=True)
 
 def load_data_and_chunk_into_books(file_path: str = "https://www.gutenberg.org/cache/epub/1727/pg1727.txt") -> list[str]:
     response = requests.get(file_path)
@@ -55,13 +55,24 @@ def store_to_neo4j(driver, chunked_books: List[List[str]]):
             tqdm(book, desc="Processing chunks")
         ):
             entities, relationships = extract_entities(chunk)
-            driver.execute_query(import_nodes_query, data=entities)
-            driver.execute_query(import_relationships_query, data=relationships)
+            driver.execute_query(import_nodes_query, 
+                                 data=entities,
+                                 book_id=book_i,
+                                 chunk_id=chunk_i,
+                                 text=chunk)
+            
+            driver.execute_query(
+                import_relationships_query,
+                data=relationships,
+                )
+            
 if __name__ == "__main__":
     books = load_data_and_chunk_into_books()
     token_count(books)
     chunked_books = chunk_books(books)
     #print(chunked_books[0][0])
     #embeddings = create_embeddings(chunks)
+    driver = neo4j_driver()
+    store_to_neo4j(driver, chunked_books)
     
             
