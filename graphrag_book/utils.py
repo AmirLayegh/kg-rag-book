@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer
 from neo4j import GraphDatabase
+import tiktoken
 
 load_dotenv(override=True)
 
@@ -72,6 +73,12 @@ def chunk_text(text: str, chunk_size: int, overlap: int, split_on_whitespaces: b
             chunks.append(chunk)
             index = end
     return chunks
+
+def num_tokens_from_string(string: str, model: str = "gpt-4") -> int:
+    """Returns the number of tokens in a text string."""
+    encoding = tiktoken.encoding_for_model(model)
+    num_tokens = len(encoding.encode(string))
+    return num_tokens
 
 def embed(text, model):
     if model == "text-embedding-3-small":  
