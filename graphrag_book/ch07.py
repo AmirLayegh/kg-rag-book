@@ -5,6 +5,7 @@ import requests
 from ch07_tools import create_extraction_prompt, parse_extraction_output, import_nodes_query, import_relationships_query
 from typing import List
 from tqdm import tqdm
+import neo4j
 
 load_dotenv(override=True)
 
@@ -65,6 +66,33 @@ def store_to_neo4j(driver, chunked_books: List[List[str]]):
                 import_relationships_query,
                 data=relationships,
                 )
+def query_database(driver: neo4j.Driver):
+    data, _, _ =driver.execute_query("""
+                         MATCH (:`__Entity__`)
+                         RETURN 'entity' AS type, count(*) AS count
+                         UNION
+                         MATCH ()-[RELATIONSHIP]->()
+                         RETURN 'relationship' AS type, count(*) AS count
+                         """)
+    print(data)
+    
+def query_person_description(driver: neo4j.Driver):
+    data, _, _ = driver.execute_query("""
+                                      MATCH (n:Person)
+                                      WHERE n.name = 'TELEMACHUS'
+                                      RETURN n.description as description
+                                      """)
+    print(data)
+
+def query_relationship_description(driver: neo4j.Driver):
+    data, _, _ = driver.execute_query("""
+                                      MATCH(n:__Entity__)-[:RELATIONSHIP]-(m:__Entity__)
+                                      WITH n, m, count(*) as countOfRels
+                                      ORDER BY countOfRels DESC LIMIT 5
+                                      MATCH (n)-[r:RELATIONSHIP]-(m)
+                                      RETURN n.name as source, m.name as target, countOfRels, collect(r.description) as description
+                                      """)
+    print([el.data() for el in data])
             
 if __name__ == "__main__":
     books = load_data_and_chunk_into_books()
@@ -73,6 +101,10 @@ if __name__ == "__main__":
     #print(chunked_books[0][0])
     #embeddings = create_embeddings(chunks)
     driver = neo4j_driver()
-    store_to_neo4j(driver, chunked_books)
-    
+    #driver.execute_query("""MATCH(n) DETACH DELETE(n)""")
+    #store_to_neo4j(driver, chunked_books)
+    #query_database(driver)
+    #query_person_description(driver)
+    query_relationship_description(driver)
+    driver.close()
             
