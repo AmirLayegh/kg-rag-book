@@ -39,9 +39,8 @@ ENTITY_TYPES = ["PERSON",
                 "WEAPON_OR_TOOL",
                 "GEO"]
 
-def extract_entities(text: str) -> List[str]:
+def extract_entities_and_relationships(text: str) -> List[str]:
     messages = [
-        #{"role": "system", "content": "You are an expert in entity extraction from text."},
         {"role": "user", "content": create_extraction_prompt(ENTITY_TYPES, text)}
     ]
     response = chat(messages, model="gpt-4o-mini")
@@ -55,7 +54,7 @@ def store_to_neo4j(driver, chunked_books: List[List[str]]):
         for chunk_i, chunk in enumerate(
             tqdm(book, desc="Processing chunks")
         ):
-            entities, relationships = extract_entities(chunk)
+            entities, relationships = extract_entities_and_relationships(chunk)
             driver.execute_query(import_nodes_query, 
                                  data=entities,
                                  book_id=book_i,
@@ -66,6 +65,7 @@ def store_to_neo4j(driver, chunked_books: List[List[str]]):
                 import_relationships_query,
                 data=relationships,
                 )
+            
 def query_database(driver: neo4j.Driver):
     data, _, _ =driver.execute_query("""
                          MATCH (:`__Entity__`)
@@ -148,6 +148,9 @@ def query_relationship_summaries(driver: neo4j.Driver):
                                       RETURN s.name AS source, t.name AS target, r.summary AS summary
                                       """)
     print([el.data() for el in data])
+
+def query_relationship_summaries_by_source(driver: neo4j.Driver):
+    pass
     
 
 if __name__ == "__main__":
