@@ -2,10 +2,23 @@ from utils import neo4j_driver, chat, chunk_text, embed, num_tokens_from_string
 from dotenv import load_dotenv
 import os
 import requests
-from ch07_tools import create_extraction_prompt, parse_extraction_output, import_nodes_query, import_relationships_query, get_summarize_prompt, import_entity_summary, import_rels_summary, calculate_communities
+from ch07_tools import (create_extraction_prompt, 
+                        parse_extraction_output, 
+                        import_nodes_query, 
+                        import_relationships_query, 
+                        get_summarize_prompt, 
+                        import_entity_summary, 
+                        import_rels_summary, 
+                        calculate_communities,
+                        community_info_query,
+                        get_summarize_community_prompt,
+                        extract_json,
+                        import_community_query
+                        )
 from typing import List
 from tqdm import tqdm
 import neo4j
+import json
 
 load_dotenv(override=True)
 
@@ -154,6 +167,33 @@ def community_detection(driver: neo4j.Driver):
     print(f"""There are {community_distribution['communityCount']} communities in the graph with distribution:
           {community_distribution['communityDistribution']}""")
 
+def community_summary(driver: neo4j.Driver):
+    community_info, _, _ = driver.execute_query(community_info_query)
+    community_summaries = []
+    for community in tqdm(community_info, desc="Summarizing communities"):
+        messages = [
+            {"role": "user", "content": get_summarize_community_prompt(community["nodes"], community["rels"])}
+        ]
+        response = chat(messages, model="gpt-4o")
+        community_summaries.append({
+            "community": json.loads(extract_json(response)),
+            "communityId": community["communityId"],
+            "nodes": [el["id"] for el in community["nodes"]],
+        })
+    driver.execute_query(import_community_query, data=community_summaries)
+
+def retrieve_community_extract(driver: neo4j.Driver):
+    data, _, _ = driver.execute_query("""
+                                      MATCH (c:__Community__)
+                                      WITH c, count {(c)<-[:IN_COMMUNITY]-()} AS size
+                                      ORDER BY size DESC LIMIT 1
+                                      RETURN c.title AS title, c.summary AS summary
+                                      """)
+    print(f"""Title: {data[0]['title']}
+          Summary: {data[0]['summary']}""")
+    
+
+    
 if __name__ == "__main__":
     books = load_data_and_chunk_into_books()
     token_count(books)
@@ -173,5 +213,7 @@ if __name__ == "__main__":
     #import_relationship_summaries_to_neo4j(driver, summaries)
     #query_relationship_summaries(driver)
     community_detection(driver)
+    community_summary(driver)
+    retrieve_community_extract(driver)
     driver.close()
             
