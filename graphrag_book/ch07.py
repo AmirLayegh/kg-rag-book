@@ -2,7 +2,7 @@ from utils import neo4j_driver, chat, chunk_text, embed, num_tokens_from_string
 from dotenv import load_dotenv
 import os
 import requests
-from ch07_tools import create_extraction_prompt, parse_extraction_output, import_nodes_query, import_relationships_query, get_summarize_prompt, import_entity_summary, import_rels_summary
+from ch07_tools import create_extraction_prompt, parse_extraction_output, import_nodes_query, import_relationships_query, get_summarize_prompt, import_entity_summary, import_rels_summary, calculate_communities
 from typing import List
 from tqdm import tqdm
 import neo4j
@@ -149,9 +149,10 @@ def query_relationship_summaries(driver: neo4j.Driver):
                                       """)
     print([el.data() for el in data])
 
-def query_relationship_summaries_by_source(driver: neo4j.Driver):
-    pass
-    
+def community_detection(driver: neo4j.Driver):
+    community_distribution = calculate_communities(driver)
+    print(f"""There are {community_distribution['communityCount']} communities in the graph with distribution:
+          {community_distribution['communityDistribution']}""")
 
 if __name__ == "__main__":
     books = load_data_and_chunk_into_books()
@@ -170,6 +171,7 @@ if __name__ == "__main__":
     #query_summaries(driver)
     #summaries = summarize_candidate_relationships(driver)
     #import_relationship_summaries_to_neo4j(driver, summaries)
-    query_relationship_summaries(driver)
+    #query_relationship_summaries(driver)
+    community_detection(driver)
     driver.close()
             
