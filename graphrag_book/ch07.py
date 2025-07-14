@@ -200,7 +200,7 @@ if __name__ == "__main__":
     chunked_books = chunk_books(books)
     #print(chunked_books[0][0])
     #embeddings = create_embeddings(chunks)
-    driver = neo4j_driver()
+    #driver = neo4j_driver()
     #driver.execute_query("""MATCH(n) DETACH DELETE(n)""")
     #store_to_neo4j(driver, chunked_books)
     #query_database(driver)
