@@ -13,7 +13,9 @@ from ch07_tools import (create_extraction_prompt,
                         community_info_query,
                         get_summarize_community_prompt,
                         extract_json,
-                        import_community_query
+                        import_community_query,
+                        get_map_system_prompt,
+                        get_reduce_system_prompt,
                         )
 from typing import List
 from tqdm import tqdm
@@ -191,16 +193,37 @@ def retrieve_community_extract(driver: neo4j.Driver):
                                       """)
     print(f"""Title: {data[0]['title']}
           Summary: {data[0]['summary']}""")
-    
 
-    
+def global_retriever(driver: neo4j.Driver, query: str, rating_threshold: float = 5) -> str:
+    community_data, _, _ = driver.execute_query("""
+                                                MATCH (c:__Community__)
+                                                WHERE c.rating >= $rating
+                                                REturn c.summary AS summary
+                                                """,
+                                                rating=rating_threshold)
+    print(f"Got {len(community_data)} communitiy summaries")
+    intermediate_results = []
+    for community in tqdm(community_data, desc="Retrieving community summaries"):
+        messages = [
+            {"role": "system", "content": get_map_system_prompt(community["summary"])},
+            {"role": "user", "content": query}
+        ]
+        intermediate_response = chat(messages, model="gpt-4o")
+        intermediate_results.append(intermediate_response)
+    final_messages = [
+        {"role": "system", "content": get_reduce_system_prompt(intermediate_results)},
+        {"role": "user", "content": query}
+    ]
+    final_response = chat(final_messages, model="gpt-4o")
+    return final_response
+
 if __name__ == "__main__":
     books = load_data_and_chunk_into_books()
     token_count(books)
     chunked_books = chunk_books(books)
     #print(chunked_books[0][0])
     #embeddings = create_embeddings(chunks)
-    #driver = neo4j_driver()
+    driver = neo4j_driver()
     #driver.execute_query("""MATCH(n) DETACH DELETE(n)""")
     #store_to_neo4j(driver, chunked_books)
     #query_database(driver)
@@ -212,8 +235,10 @@ if __name__ == "__main__":
     #summaries = summarize_candidate_relationships(driver)
     #import_relationship_summaries_to_neo4j(driver, summaries)
     #query_relationship_summaries(driver)
-    community_detection(driver)
-    community_summary(driver)
-    retrieve_community_extract(driver)
+    # community_detection(driver)
+    # community_summary(driver)
+    # retrieve_community_extract(driver)
+    response = global_retriever(driver, "What is the story about?")
+    print(response)
     driver.close()
             
