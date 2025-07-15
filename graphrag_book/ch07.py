@@ -16,6 +16,7 @@ from ch07_tools import (create_extraction_prompt,
                         import_community_query,
                         get_map_system_prompt,
                         get_reduce_system_prompt,
+                        get_local_system_prompt,
                         )
 from typing import List
 from tqdm import tqdm
@@ -217,6 +218,85 @@ def global_retriever(driver: neo4j.Driver, query: str, rating_threshold: float =
     final_response = chat(final_messages, model="gpt-4o")
     return final_response
 
+def generate_embedding_for_entities(driver: neo4j.Driver):
+    
+    entities, _, _ = driver.execute_query("""
+                                          MATCH (e:__Entity__)
+                                          WHERE e.summary IS NOT NULL AND e.summary <> ''
+                                          RETURN e.summary AS summary, e.name AS name
+                                          """
+                                          )
+    
+    data = [{"name": el["name"], "embedding": embed(el["summary"], model="all-MiniLM-L12-v2")[0]} for el in entities]
+    
+    driver.execute_query("""
+                         UNWIND $data AS row
+                         MATCH (e:__Entity__ {name: row.name})
+                         CALL db.create.setNodeVectorProperty(e, 'embedding', row.embedding)
+                         """,
+                         data=data,
+                         )
+    
+    driver.execute_query("""
+                         CREATE VECTOR INDEX entities IF NOT EXISTS
+                         FOR (n:__Entity__)
+                         ON (n.embedding)
+                         """,
+                         data=data,
+                         )
+
+def local_search(driver: neo4j.Driver, query: str, k: int = 5, top_chunks: int = 3, top_communities: int = 3, top_inside_rels: int = 3) -> str:
+    local_search_query = """
+CALL db.index.vector.queryNodes('entities', $k, $embedding)
+YIELD node, score
+WITH collect(node) as nodes
+WITH collect {
+    UNWIND nodes as n
+    MATCH (n)<-[:HAS_ENTITY]->(c:__Chunk__)
+    WITH c, count(distinct n) as freq
+    RETURN c.text AS chunkText
+    ORDER BY freq DESC
+    LIMIT $topChunks
+} AS text_mapping,
+collect {
+    UNWIND nodes as n
+    MATCH (n)-[:IN_COMMUNITY]->(c:__Community__)
+    WITH c, c.rank as rank, c.weight AS weight
+    RETURN c.summary 
+    ORDER BY rank, weight DESC
+    LIMIT $topCommunities
+} AS report_mapping,
+collect {
+    UNWIND nodes as n
+    MATCH (n)-[r:SUMMARIZED_RELATIONSHIP]-(m) 
+    WHERE m IN nodes
+    RETURN r.summary AS descriptionText
+    ORDER BY r.rank, r.weight DESC 
+    LIMIT $topInsideRels
+} as insideRels,
+collect {
+    UNWIND nodes as n
+    RETURN n.summary AS descriptionText
+} as entities
+RETURN {Chunks: text_mapping, Reports: report_mapping, 
+       Relationships: insideRels, 
+       Entities: entities} AS text
+"""
+    context, _, _ = driver.execute_query(local_search_query,
+                                         k=k,
+                                         topChunks=top_chunks,
+                                         topCommunities=top_communities,
+                                         topInsideRels=top_inside_rels,
+                                         embedding=embed(query, model="all-MiniLM-L12-v2")[0]
+                                         )
+    context_str = str(context[0]["text"])
+    messages = [
+        {"role": "system", "content": get_local_system_prompt(context_str)},
+        {"role": "user", "content": query}
+    ]
+    response = chat(messages, model="gpt-4o")
+    return context_str, response
+    
 if __name__ == "__main__":
     books = load_data_and_chunk_into_books()
     token_count(books)
@@ -238,7 +318,12 @@ if __name__ == "__main__":
     # community_detection(driver)
     # community_summary(driver)
     # retrieve_community_extract(driver)
-    response = global_retriever(driver, "What is the story about?")
+    #response = global_retriever(driver, "What is the story about?")
+    #print(response)
+    #generate_embedding_for_entities(driver)
+    context, response = local_search(driver, "Who is Jove?")
+    print(context)
+    print("-"*100)
     print(response)
     driver.close()
             

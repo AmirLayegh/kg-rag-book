@@ -89,7 +89,10 @@ def embed(text, model):
         return list(map(lambda x: x.embedding, response.data))
     elif model == "all-MiniLM-L12-v2":
         model = SentenceTransformer("all-MiniLM-L12-v2")
-        return list(map(lambda x: model.encode(x), text))
+        if isinstance(text, str):
+            return [model.encode(text)]
+        else:
+            return list(map(lambda x: model.encode(x), text))
 
 def chat(messages, model="gpt-4o-mini", temp=0.0, config={}):
     response = open_ai_client.chat.completions.create(
